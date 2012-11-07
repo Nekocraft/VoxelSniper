@@ -41,17 +41,9 @@ import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
  */
 public class VoxelSniper extends JavaPlugin {
 
-    private static final String ITEMS_TXT = "items.txt";
-    private static final String PLUGINS_VOXEL_SNIPER_ITEMS_TXT = "plugins/VoxelSniper/items.txt";
     private static final String PLUGINS_VOXEL_SNIPER_SNIPER_CONFIG_XML = "plugins/VoxelSniper/SniperConfig.xml";
-    private static final SniperPermissionHelper SNIPER_PERMISSION_HELPER = new SniperPermissionHelper();
 
     private final VoxelSniperListener voxelSniperListener = new VoxelSniperListener(this);
-    private final ArrayList<Integer> liteRestricted = new ArrayList<Integer>();
-    private int liteMaxBrush = 5;
-    public static final Logger LOG = Logger.getLogger("Minecraft");
-    protected static final Object ITEM_LOCK = new Object();
-    private static HashMap<String, Integer> items;
 
     private static VoxelSniper instance;
 
@@ -60,107 +52,6 @@ public class VoxelSniper extends JavaPlugin {
      */
     public static VoxelSniper getInstance() {
         return VoxelSniper.instance;
-    }
-
-    /**
-     * Get Item name from id.
-     * 
-     * @param id
-     * @return String
-     */
-    public static String getItem(final int id) {
-        synchronized (VoxelSniper.ITEM_LOCK) {
-            for (final String _name : VoxelSniper.items.keySet()) {
-                if (VoxelSniper.items.get(_name) == id) {
-                    return _name;
-                }
-            }
-        }
-        return String.valueOf(id);
-    }
-
-    /**
-     * Get Item id from name.
-     * 
-     * @param name
-     * @return int
-     */
-    public static int getItem(final String name) {
-        synchronized (VoxelSniper.ITEM_LOCK) {
-            if (VoxelSniper.items.containsKey(name)) {
-                return VoxelSniper.items.get(name);
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * @return {@link SniperPermissionHelper}
-     */
-    public static SniperPermissionHelper getSniperPermissionHelper() {
-        return VoxelSniper.SNIPER_PERMISSION_HELPER;
-    }
-
-    /**
-     * Validate if item id is valid.
-     * 
-     * @param itemId
-     * @return boolean
-     */
-    public static boolean isValidItem(final int itemId) {
-        return VoxelSniper.items.containsValue(itemId);
-    }
-
-    /**
-     * @return int
-     */
-    public final int getLiteMaxBrush() {
-        return this.liteMaxBrush;
-    }
-
-    /**
-     * @return ArrayList<Integer>
-     */
-    public final ArrayList<Integer> getLiteRestricted() {
-        return this.liteRestricted;
-    }
-
-    /**
-     * Load items from Item List file.
-     */
-    public final void loadItems() {
-        final String _location = VoxelSniper.PLUGINS_VOXEL_SNIPER_ITEMS_TXT;
-        final File _f = new File(VoxelSniper.ITEMS_TXT);
-        final File _nf = new File(VoxelSniper.PLUGINS_VOXEL_SNIPER_ITEMS_TXT);
-        if (_f.exists() && !_nf.exists()) {
-            _f.delete();
-        }
-
-        if (!_nf.exists()) {
-            _nf.getParentFile().mkdirs();
-            this.saveResource(VoxelSniper.ITEMS_TXT, false);
-        }
-
-        synchronized (VoxelSniper.ITEM_LOCK) {
-            VoxelSniper.items = new HashMap<String, Integer>();
-            try {
-                final Scanner _scanner = new Scanner(_nf);
-                while (_scanner.hasNextLine()) {
-                    final String _line = _scanner.nextLine();
-                    if (_line.startsWith("#")) {
-                        continue;
-                    }
-                    if (_line.equals("")) {
-                        continue;
-                    }
-                    final String[] _split = _line.split(":");
-                    VoxelSniper.items.put(_split[0], Integer.parseInt(_split[1]));
-                }
-                _scanner.close();
-            } catch (final Exception _e) {
-                VoxelSniper.LOG.log(Level.SEVERE, "Exception while reading " + _location + " (Are you sure you formatted it correctly?)", _e);
-            }
-        }
     }
 
     /**
@@ -189,19 +80,7 @@ public class VoxelSniper extends JavaPlugin {
                     continue;
                 }
 
-                if (_n.getNodeName().equals("LiteSniperBannedIDs")) {
-                    this.liteRestricted.clear();
-                    final NodeList _idn = _n.getChildNodes();
-                    for (int _y = 0; _y < _idn.getLength(); _y++) {
-                        if (_idn.item(_y).getNodeName().equals("id")) {
-                            if (_idn.item(_y).hasChildNodes()) {
-                                this.liteRestricted.add(Integer.parseInt(_idn.item(_y).getFirstChild().getNodeValue()));
-                            }
-                        }
-                    }
-                } else if (_n.getNodeName().equals("MaxLiteBrushSize")) {
-                    this.liteMaxBrush = Integer.parseInt(_n.getFirstChild().getNodeValue());
-                } else if (_n.getNodeName().equals("SniperUndoCache")) {
+                if (_n.getNodeName().equals("SniperUndoCache")) {
                     Sniper.setUndoCacheSize(Integer.parseInt(_n.getFirstChild().getNodeValue()));
                 }
             }
@@ -255,7 +134,6 @@ public class VoxelSniper extends JavaPlugin {
 
         MetricsManager.getInstance().start();
 
-        this.loadItems();
         this.loadSniperConfiguration();
 
         final PluginManager _pm = Bukkit.getPluginManager();
@@ -267,7 +145,7 @@ public class VoxelSniper extends JavaPlugin {
      */
     public final void saveSniperConfig() {
         try {
-            VoxelSniper.LOG.info("[VoxelSniper] Saving Configuration.....");
+            this.getLogger().info("Saving Configuration.....");
 
             final File _f = new File(VoxelSniper.PLUGINS_VOXEL_SNIPER_SNIPER_CONFIG_XML);
             _f.getParentFile().mkdirs();
@@ -276,21 +154,6 @@ public class VoxelSniper extends JavaPlugin {
             final DocumentBuilder _docBuilder = _docFactory.newDocumentBuilder();
             final Document _doc = _docBuilder.newDocument();
             final Element _vsElement = _doc.createElement("VoxelSniper");
-
-            final Element _liteUnusable = _doc.createElement("LiteSniperBannedIDs");
-            if (!this.liteRestricted.isEmpty()) {
-                for (int _x = 0; _x < this.liteRestricted.size(); _x++) {
-                    final int _id = this.liteRestricted.get(_x);
-                    final Element _ide = _doc.createElement("id");
-                    _ide.appendChild(_doc.createTextNode(_id + ""));
-                    _liteUnusable.appendChild(_ide);
-                }
-            }
-            _vsElement.appendChild(_liteUnusable);
-
-            final Element _liteBrushSize = _doc.createElement("MaxLiteBrushSize");
-            _liteBrushSize.appendChild(_doc.createTextNode(this.liteMaxBrush + ""));
-            _vsElement.appendChild(_liteBrushSize);
 
             final Element _undoCache = _doc.createElement("SniperUndoCache");
             _undoCache.appendChild(_doc.createTextNode(Sniper.getUndoCacheSize() + ""));
@@ -307,18 +170,11 @@ public class VoxelSniper extends JavaPlugin {
             final StreamResult _result = new StreamResult(_f);
             _transformer.transform(_source, _result);
 
-            VoxelSniper.LOG.info("[VoxelSniper] Configuration Saved!!");
+            this.getLogger().info("Configuration Saved!!");
         } catch (final TransformerException _ex) {
             Logger.getLogger(VoxelSniperListener.class.getName()).log(Level.SEVERE, null, _ex);
         } catch (final ParserConfigurationException _ex) {
             Logger.getLogger(VoxelSniperListener.class.getName()).log(Level.SEVERE, null, _ex);
         }
-    }
-
-    /**
-     * @param liteMaxBrush
-     */
-    public final void setLiteMaxBrush(final int liteMaxBrush) {
-        this.liteMaxBrush = liteMaxBrush;
     }
 }

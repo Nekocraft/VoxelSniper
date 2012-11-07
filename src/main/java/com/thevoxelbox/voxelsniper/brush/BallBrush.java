@@ -1,126 +1,105 @@
 package com.thevoxelbox.voxelsniper.brush;
 
-import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 
-import com.thevoxelbox.voxelsniper.SnipeData;
-import com.thevoxelbox.voxelsniper.Message;
-import com.thevoxelbox.voxelsniper.brush.perform.PerformBrush;
+import com.thevoxelbox.voxelgunsmith.Brush;
+import com.thevoxelbox.voxelgunsmith.OperationData;
+import com.thevoxelbox.voxelgunsmith.Performer;
+import com.thevoxelbox.voxelgunsmith.ToolConfiguration;
+import com.thevoxelbox.voxelgunsmith.User;
 
 /**
- * A brush that creates a solid ball.
+ * A brush that creates a solid ball. 
  * http://www.voxelwiki.com/minecraft/Voxelsniper#The_Ball_Brush
+ * 
  * @author Piotr
  */
-public class BallBrush extends PerformBrush {
-    private static int timesUsed = 0;
-    private double trueCircle = 0;
+public class BallBrush implements Brush {
+    private static final String[] HANDLES = { "ball", "b" };
+    private final double trueCircle = 0;
 
-    /**
-     * 
-     */
-    public BallBrush() {
-        this.setName("Ball");
+    @Override
+    public final void executeArrow(final OperationData operationData) {
+        this.ball(operationData, operationData.getTargetBlock());
     }
 
-    private void ball(final SnipeData v) {    	
-        final int _bSize = v.getBrushSize();
-        final double _bPow = Math.pow(_bSize + this.trueCircle, 2);
+    @Override
+    public final void executePowder(final OperationData operationData) {
+        this.ball(operationData, operationData.getLastBlock());
+    }
 
-        this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY(), this.getBlockPositionZ()));
+    @Override
+    public final String getInfo() {
+        return "Generates a ball out of given material at targeted location.";
+    }
 
-        for (int _z = 1; _z <= _bSize; _z++) {
+    @Override
+    public final String getName() {
+        return "Ball";
+    }
+
+    @Override
+    public final String getPermissionNode() {
+        return "voxelsniper.primitives.ball";
+    }
+
+    @Override
+    public final String[] getShorthandles() {
+        return BallBrush.HANDLES;
+    }
+
+    @Override
+    public void onInitialize(final User user, final String toolId) {
+
+    }
+
+    private void ball(final OperationData operationData, final Block targetBlock) {
+        final ToolConfiguration _toolConfiguration = operationData.getToolConfiguration();
+        final double _bPow = Math.pow(_toolConfiguration.getBrushSize() + this.trueCircle, 2);
+        final Performer _performer = _toolConfiguration.getPerformer();
+
+        _performer.perform(operationData.getTargetBlock());
+        for (int _z = 1; _z <= _toolConfiguration.getBrushSize(); _z++) {
             final double _zPow = Math.pow(_z, 2);
-            
-            this.current.perform(this.clampY(this.getBlockPositionX() + _z, this.getBlockPositionY(), this.getBlockPositionZ()));
-            this.current.perform(this.clampY(this.getBlockPositionX() - _z, this.getBlockPositionY(), this.getBlockPositionZ()));
-            this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() + _z, this.getBlockPositionZ()));
-            this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() - _z, this.getBlockPositionZ()));
-            this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY(), this.getBlockPositionZ() + _z));
-            this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY(), this.getBlockPositionZ() - _z));
-            
-            for (int _x = 1; _x <= _bSize; _x++) {
+
+            _performer.perform(targetBlock.getRelative(_z, 0, 0));
+            _performer.perform(targetBlock.getRelative(-_z, 0, 0));
+            _performer.perform(targetBlock.getRelative(0, _z, 0));
+            _performer.perform(targetBlock.getRelative(0, -_z, 0));
+            _performer.perform(targetBlock.getRelative(0, 0, _z));
+            _performer.perform(targetBlock.getRelative(0, 0, -_z));
+
+            for (int _x = 1; _x <= _toolConfiguration.getBrushSize(); _x++) {
                 final double _xPow = Math.pow(_x, 2);
-                
+
                 if (_zPow + Math.pow(_x, 2) <= _bPow) {
-                    this.current.perform(this.clampY(this.getBlockPositionX() + _z, this.getBlockPositionY(), this.getBlockPositionZ() + _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX() + _z, this.getBlockPositionY(), this.getBlockPositionZ() - _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX() - _z, this.getBlockPositionY(), this.getBlockPositionZ() + _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX() - _z, this.getBlockPositionY(), this.getBlockPositionZ() - _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX() + _z, this.getBlockPositionY() + _x, this.getBlockPositionZ()));
-                    this.current.perform(this.clampY(this.getBlockPositionX() + _z, this.getBlockPositionY() - _x, this.getBlockPositionZ()));
-                    this.current.perform(this.clampY(this.getBlockPositionX() - _z, this.getBlockPositionY() + _x, this.getBlockPositionZ()));
-                    this.current.perform(this.clampY(this.getBlockPositionX() - _z, this.getBlockPositionY() - _x, this.getBlockPositionZ()));
-                    this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() + _z, this.getBlockPositionZ() + _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() + _z, this.getBlockPositionZ() - _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() - _z, this.getBlockPositionZ() + _x));
-                    this.current.perform(this.clampY(this.getBlockPositionX(), this.getBlockPositionY() - _z, this.getBlockPositionZ() - _x));
+                    _performer.perform(targetBlock.getRelative(_z, 0, _x));
+                    _performer.perform(targetBlock.getRelative(_z, 0, -_x));
+                    _performer.perform(targetBlock.getRelative(-_z, 0, _x));
+                    _performer.perform(targetBlock.getRelative(-_z, 0, -_x));
+                    _performer.perform(targetBlock.getRelative(_z, _x, 0));
+                    _performer.perform(targetBlock.getRelative(_z, -_x, 0));
+                    _performer.perform(targetBlock.getRelative(-_z, _x, 0));
+                    _performer.perform(targetBlock.getRelative(-_z, -_x, 0));
+                    _performer.perform(targetBlock.getRelative(0, _z, _x));
+                    _performer.perform(targetBlock.getRelative(0, _z, -_x));
+                    _performer.perform(targetBlock.getRelative(0, -_z, _x));
+                    _performer.perform(targetBlock.getRelative(0, -_z, -_x));
                 }
-                
-                for (int _y = 1; _y <= _bSize; _y++) {
+
+                for (int _y = 1; _y <= _toolConfiguration.getBrushSize(); _y++) {
                     if ((_xPow + Math.pow(_y, 2) + _zPow) <= _bPow) {
-                        this.current.perform(this.clampY(this.getBlockPositionX() + _x, this.getBlockPositionY() + _y, this.getBlockPositionZ() + _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() + _x, this.getBlockPositionY() + _y, this.getBlockPositionZ() - _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() - _x, this.getBlockPositionY() + _y, this.getBlockPositionZ() + _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() - _x, this.getBlockPositionY() + _y, this.getBlockPositionZ() - _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() + _x, this.getBlockPositionY() - _y, this.getBlockPositionZ() + _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() + _x, this.getBlockPositionY() - _y, this.getBlockPositionZ() - _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() - _x, this.getBlockPositionY() - _y, this.getBlockPositionZ() + _z));
-                        this.current.perform(this.clampY(this.getBlockPositionX() - _x, this.getBlockPositionY() - _y, this.getBlockPositionZ() - _z));
+                        _performer.perform(targetBlock.getRelative(_x, _y, _z));
+                        _performer.perform(targetBlock.getRelative(_x, _y, -_z));
+                        _performer.perform(targetBlock.getRelative(-_x, _y, _z));
+                        _performer.perform(targetBlock.getRelative(-_x, _y, -_z));
+                        _performer.perform(targetBlock.getRelative(_x, -_y, _z));
+                        _performer.perform(targetBlock.getRelative(_x, -_y, -_z));
+                        _performer.perform(targetBlock.getRelative(-_x, -_y, _z));
+                        _performer.perform(targetBlock.getRelative(-_x, -_y, -_z));
                     }
                 }
             }
         }
-
-        v.storeUndo(this.current.getUndo());
-    }
-    
-    @Override
-    protected final void arrow(final SnipeData v) {    	
-    	this.ball(v);
-    }
-    
-    @Override
-    protected final void powder(final SnipeData v) {
-    	this.ball(v);
-    }
-
-    @Override
-    public final void info(final Message vm) {
-        vm.brushName(this.getName());
-        vm.size();
-    }
-
-    @Override
-    public final void parameters(final String[] par, final SnipeData v) {
-        for (int _i = 1; _i < par.length; _i++) {
-        	final String _param = par[_i];
-        	
-        	if (_param.equalsIgnoreCase("info")) {
-        		v.sendMessage(ChatColor.GOLD + "Ball Brush Parameters:");
-        		v.sendMessage(ChatColor.AQUA
-        				+ "/b b true -- will use a true sphere algorithm instead of the skinnier version with classic sniper nubs. /b b false will switch back. (false is default)");
-        		return;
-        	} else if (_param.startsWith("true")) {
-                this.trueCircle = 0.5;
-                v.sendMessage(ChatColor.AQUA + "True circle mode ON.");
-                continue;
-            } else if (_param.startsWith("false")) {
-                this.trueCircle = 0;
-                v.sendMessage(ChatColor.AQUA + "True circle mode OFF.");
-                continue;
-            } else {
-                v.sendMessage(ChatColor.RED + "Invalid brush parameters! use the info parameter to display parameter info.");
-            }
-        }
-    }
-    
-    @Override
-    public final int getTimesUsed() {
-        return BallBrush.timesUsed;
-    }
-    
-    @Override
-    public final void setTimesUsed(final int tUsed) {
-        BallBrush.timesUsed = tUsed;
     }
 }

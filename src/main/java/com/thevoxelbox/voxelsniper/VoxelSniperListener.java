@@ -50,8 +50,6 @@ public class VoxelSniperListener implements Listener {
                 return VoxelSniperListener.commandSniperD(player);
             } else if (command.equalsIgnoreCase("vs")) {
                 return VoxelSniperListener.commandSniperVs(player, split);
-            } else if (command.equalsIgnoreCase("vc")) {
-                return VoxelSniperListener.commandSniperVc(player, split);
             } else if (command.equalsIgnoreCase("vh")) {
                 return VoxelSniperListener.commandSniperVh(player, split);
             } else if (command.equalsIgnoreCase("vi")) {
@@ -68,11 +66,6 @@ public class VoxelSniperListener implements Listener {
                 return VoxelSniperListener.commandSniperB(player, split);
             } else if (command.equalsIgnoreCase("p")) {
                 return VoxelSniperListener.commandSniperP(player, split);
-            } else if (command.equalsIgnoreCase("bms")) {
-                return VoxelSniperListener.commandSniperBms(player, split);
-            } else if (command.equalsIgnoreCase("bml")) {
-                return VoxelSniperListener.commandSniperBml(player, split);
-            }
         }
         return false;
     }
@@ -144,40 +137,6 @@ public class VoxelSniperListener implements Listener {
         } catch (final Exception _ex) {
             VoxelSniper.LOG.log(Level.WARNING, "[VoxelSniper] Command error from " + player.getName());
             _ex.printStackTrace();
-            return true;
-        }
-    }
-
-    /**
-     * @param player
-     * @param split
-     * @return
-     */
-    private static boolean commandSniperBml(final Player player, final String[] split) {
-        try {
-            final Sniper _ps = VoxelSniper.getSniperPermissionHelper().getSniperInstance(player);
-            _ps.loadPreset(Integer.parseInt(split[0]));
-            return true;
-        } catch (final Exception _e) {
-            final Sniper _ps = VoxelSniper.getSniperPermissionHelper().getSniperInstance(player);
-            _ps.loadPreset(split[0]);
-            return true;
-        }
-    }
-
-    /**
-     * @param player
-     * @param split
-     * @return
-     */
-    private static boolean commandSniperBms(final Player player, final String[] split) {
-        try {
-            final Sniper _ps = VoxelSniper.getSniperPermissionHelper().getSniperInstance(player);
-            _ps.savePreset(Integer.parseInt(split[0]));
-            return true;
-        } catch (final Exception _e) {
-            final Sniper _ps = VoxelSniper.getSniperPermissionHelper().getSniperInstance(player);
-            _ps.savePreset(split[0]);
             return true;
         }
     }
@@ -336,25 +295,6 @@ public class VoxelSniperListener implements Listener {
                 player.sendMessage(ChatColor.RED + "You have entered an invalid Item ID!");
                 return true;
             }
-        }
-    }
-
-    /**
-     * @param player
-     * @param split
-     * @return
-     */
-    private static boolean commandSniperVc(final Player player, final String[] split) {
-        try {
-            if (split.length == 0) {
-                VoxelSniper.getSniperPermissionHelper().getSniperInstance(player).setCentroid(0);
-                return true;
-            }
-            VoxelSniper.getSniperPermissionHelper().getSniperInstance(player).setCentroid(Integer.parseInt(split[0]));
-            return true;
-        } catch (final Exception _e) {
-            player.sendMessage(ChatColor.RED + "Invalid input");
-            return true;
         }
     }
 
