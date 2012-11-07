@@ -40,19 +40,8 @@ public class VoxelSniper extends JavaPlugin {
 
     private final VoxelSniperListener voxelSniperListener = new VoxelSniperListener(this);
 
-    private static VoxelSniper instance;
-
-    /**
-     * @return {@link VoxelSniper}
-     */
-    public static VoxelSniper getInstance() {
-        return VoxelSniper.instance;
-    }
-
     /**
      * Load configuration.
-     * 
-     * @param voxelSniperListener
      */
     public final void loadSniperConfiguration() {
         try {
@@ -125,7 +114,6 @@ public class VoxelSniper extends JavaPlugin {
 
     @Override
     public final void onEnable() {
-        VoxelSniper.instance = this;
 
         MetricsManager.getInstance().start();
 
