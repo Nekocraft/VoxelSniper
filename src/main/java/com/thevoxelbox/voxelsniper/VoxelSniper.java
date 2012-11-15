@@ -29,13 +29,14 @@ import com.martiansoftware.jsap.UnflaggedOption;
  */
 public class VoxelSniper extends JavaPlugin
 {
+    private static final int MAXIMUM_SCAN_RANGE = 150;
     private VoxelSniperListener voxelSniperListener;
     private SniperUserManager sniperUserManager;
 
     private SniperConfiguration sniperConfiguration;
+    
     private final HelpJSAP gotoParser;
     private final HelpJSAP vsParser;
-
     private final HelpJSAP vParser;
 
     /**
@@ -247,11 +248,11 @@ public class VoxelSniper extends JavaPlugin
         else
         {
             // get material you are pointing at.
-            Iterator<Block> iterator = new SniperBlockIterator(player.getLocation(), 150);
+            final Iterator<Block> iterator = new SniperBlockIterator(player.getLocation(), VoxelSniper.MAXIMUM_SCAN_RANGE);
 
             while (iterator.hasNext())
             {
-                Block block = iterator.next();
+                final Block block = iterator.next();
                 if (block == null)
                 {
                     continue;
