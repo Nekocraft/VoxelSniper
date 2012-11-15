@@ -11,34 +11,40 @@ import com.thevoxelbox.voxelgunsmith.User;
  * @author MikeMatrix
  * 
  */
-public class SniperBrushParameterManager implements BrushParameterManager {
+public class SniperBrushParameterManager implements BrushParameterManager
+{
 
     @Override
-    public void clear() {
+    public void clear()
+    {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void clear(final User user) {
+    public void clear(final User user)
+    {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void clear(final User user, final String toolId) {
+    public void clear(final User user, final String toolId)
+    {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public final BrushParameters getInstance(final User user, final String toolId, final Brush brush) {
+    public final BrushParameters getInstance(final User user, final String toolId, final Brush brush)
+    {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void removeInstance(final User user, final String toolId, final Brush brush) {
+    public void removeInstance(final User user, final String toolId, final Brush brush)
+    {
         // TODO Auto-generated method stub
 
     }

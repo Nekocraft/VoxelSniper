@@ -15,7 +15,8 @@ import com.thevoxelbox.voxelsniper.brush.Brush;
 /**
  * @author Monofraps
  */
-public final class MetricsManager {
+public final class MetricsManager
+{
     private static int snipesDone = 0;
     private static long snipeCounterInitTimeStamp = 0;
     private static MetricsManager instance;
@@ -23,8 +24,10 @@ public final class MetricsManager {
     /**
      * @return {@link MetricsManager}
      */
-    public static MetricsManager getInstance() {
-        if (MetricsManager.instance == null) {
+    public static MetricsManager getInstance()
+    {
+        if (MetricsManager.instance == null)
+        {
             MetricsManager.instance = new MetricsManager();
         }
 
@@ -34,7 +37,8 @@ public final class MetricsManager {
     /**
      * Increase the Snipes Counter.
      */
-    public static void increaseSnipeCounter() {
+    public static void increaseSnipeCounter()
+    {
         MetricsManager.snipesDone++;
     }
 
@@ -43,120 +47,149 @@ public final class MetricsManager {
      * 
      * @param currentTimeMillis
      */
-    public static void setSnipeCounterInitTimeStamp(final long currentTimeMillis) {
+    public static void setSnipeCounterInitTimeStamp(final long currentTimeMillis)
+    {
         MetricsManager.snipeCounterInitTimeStamp = currentTimeMillis;
     }
 
-    private MetricsManager() {
+    private MetricsManager()
+    {
     }
 
     /**
      * Start sending Metrics.
      */
-    public void start() {
-        try {
-            final Metrics _metrics = new Metrics(VoxelSniper.getInstance());
+    public void start()
+    {
+        try
+        {
+            final Metrics metrics = new Metrics(VoxelSniper.getInstance());
 
-            final Graph _graph = _metrics.createGraph("Snipers Online");
-            _graph.addPlotter(new Metrics.Plotter("Snipers Online") {
+            final Graph graph = metrics.createGraph("Snipers Online");
+            graph.addPlotter(new Metrics.Plotter("Snipers Online")
+            {
 
                 @Override
-                public int getValue() {
-                    int _count = 0;
-                    for (final Player _player : Bukkit.getOnlinePlayers()) {
-                        if (VoxelSniper.getSniperPermissionHelper().isSniper(_player)) {
-                            _count++;
+                public int getValue()
+                {
+                    int count = 0;
+                    for (final Player player : Bukkit.getOnlinePlayers())
+                    {
+                        if (VoxelSniper.getSniperPermissionHelper().isSniper(player))
+                        {
+                            count++;
                         }
                     }
-                    return _count;
+                    return count;
                 }
             });
-            _graph.addPlotter(new Metrics.Plotter("Litesnipers Online") {
+            graph.addPlotter(new Metrics.Plotter("Litesnipers Online")
+            {
 
                 @Override
-                public int getValue() {
-                    int _count = 0;
-                    for (final Player _player : Bukkit.getOnlinePlayers()) {
-                        if (VoxelSniper.getSniperPermissionHelper().isLiteSniper(_player)) {
-                            _count++;
+                public int getValue()
+                {
+                    int count = 0;
+                    for (final Player player : Bukkit.getOnlinePlayers())
+                    {
+                        if (VoxelSniper.getSniperPermissionHelper().isLiteSniper(player))
+                        {
+                            count++;
                         }
                     }
-                    return _count;
+                    return count;
                 }
             });
 
-            _metrics.addCustomData(new Metrics.Plotter("Average Snipes per Minute") {
+            metrics.addCustomData(new Metrics.Plotter("Average Snipes per Minute")
+            {
 
                 @Override
-                public int getValue() {
-                    final int _currentSnipes = MetricsManager.snipesDone;
-                    final long _initializationTimeStamp = MetricsManager.snipeCounterInitTimeStamp;
-                    final double _deltaTime = System.currentTimeMillis() - _initializationTimeStamp;
-                    
-                    double _avg = 0;
-                    if(_deltaTime < 60000) {
-                    	_avg = _currentSnipes;
-                    } else {
-                    	final double _timeRunning = _deltaTime / 60000;
-                    	_avg = _currentSnipes / _timeRunning;
+                public int getValue()
+                {
+                    final int currentSnipes = MetricsManager.snipesDone;
+                    final long initializationTimeStamp = MetricsManager.snipeCounterInitTimeStamp;
+                    final double deltaTime = System.currentTimeMillis() - initializationTimeStamp;
+
+                    double avg = 0;
+                    if (deltaTime < 60000)
+                    {
+                        avg = currentSnipes;
                     }
-                    
+                    else
+                    {
+                        final double timeRunning = deltaTime / 60000;
+                        avg = currentSnipes / timeRunning;
+                    }
+
                     // quite unlikely ...
-                    if(_avg > 10000) {
-                    	_avg = 0;
+                    if (avg > 10000)
+                    {
+                        avg = 0;
                     }
 
-                    return NumberConversions.floor(_avg);
+                    return NumberConversions.floor(avg);
                 }
             });
-            
-           
-            final Graph _graphBrushUsage = _metrics.createGraph("Brush Usage");
 
-            final HashMap<String, Brush> _temp = SniperBrushes.getSniperBrushes();
-            for (final Entry<String, Brush> _entry : _temp.entrySet()) {
-                _graphBrushUsage.addPlotter(new Metrics.Plotter(SniperBrushes.getName(_entry.getValue())) {
+            final Graph graphBrushUsage = metrics.createGraph("Brush Usage");
+
+            final HashMap<String, Brush> temp = SniperBrushes.getSniperBrushes();
+            for (final Entry<String, Brush> entry : temp.entrySet())
+            {
+                graphBrushUsage.addPlotter(new Metrics.Plotter(SniperBrushes.getName(entry.getValue()))
+                {
                     @Override
-                    public int getValue() {
-                        return _entry.getValue().getTimesUsed();
+                    public int getValue()
+                    {
+                        return entry.getValue().getTimesUsed();
                     }
 
                     @Override
-                    public void reset() {
-                        _entry.getValue().setTimesUsed(0);
+                    public void reset()
+                    {
+                        entry.getValue().setTimesUsed(0);
                     }
                 });
             }
-            
-            final Graph _graphJavaVersion = _metrics.createGraph("Java Version");
-            _graphJavaVersion.addPlotter(new Metrics.Plotter(System.getProperty("java.version")) {
-				
-				@Override
-				public int getValue() {					
-					return 1;
-				}
-			});
-            
-            final Graph _graphOsName = _metrics.createGraph("OS Name");
-            _graphOsName.addPlotter(new Metrics.Plotter(System.getProperty("os.name")) {
-				
-				@Override
-				public int getValue() {					
-					return 1;
-				}
-			});
-            
-            final Graph _graphOsArch = _metrics.createGraph("OS Architecture");
-            _graphOsArch.addPlotter(new Metrics.Plotter(System.getProperty("os.arch")) {
-				
-				@Override
-				public int getValue() {					
-					return 1;
-				}
-			});
 
-            _metrics.start();
-        } catch (final IOException _e) {
+            final Graph graphJavaVersion = metrics.createGraph("Java Version");
+            graphJavaVersion.addPlotter(new Metrics.Plotter(System.getProperty("java.version"))
+            {
+
+                @Override
+                public int getValue()
+                {
+                    return 1;
+                }
+            });
+
+            final Graph graphOsName = metrics.createGraph("OS Name");
+            graphOsName.addPlotter(new Metrics.Plotter(System.getProperty("os.name"))
+            {
+
+                @Override
+                public int getValue()
+                {
+                    return 1;
+                }
+            });
+
+            final Graph graphOsArch = metrics.createGraph("OS Architecture");
+            graphOsArch.addPlotter(new Metrics.Plotter(System.getProperty("os.arch"))
+            {
+
+                @Override
+                public int getValue()
+                {
+                    return 1;
+                }
+            });
+
+            metrics.start();
+        }
+        catch (final IOException e)
+        {
             VoxelSniper.getInstance().getLogger().finest("Failed to submit Metrics Data.");
         }
     }

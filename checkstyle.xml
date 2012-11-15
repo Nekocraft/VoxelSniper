@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: VoxelPlugineering
+    Checkstyle-Configuration: VoxelSniper
     Description: none
 -->
 <module name="Checker">
@@ -26,12 +26,8 @@
     </module>
     <module name="JavadocStyle"/>
     <module name="ConstantName"/>
-    <module name="LocalFinalVariableName">
-      <property name="format" value="^_[a-z][a-zA-Z0-9]*$"/>
-    </module>
-    <module name="LocalVariableName">
-      <property name="format" value="^_[a-z][a-zA-Z0-9]*$"/>
-    </module>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
     <module name="MemberName"/>
     <module name="MethodName"/>
     <module name="PackageName"/>
@@ -42,11 +38,6 @@
     <module name="IllegalImport"/>
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
-    <module name="LineLength">
-      <property name="severity" value="ignore"/>
-      <property name="max" value="160"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-    </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
     <module name="EmptyForIteratorPad"/>
@@ -64,9 +55,10 @@
     <module name="RedundantModifier"/>
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
-    <module name="LeftCurly"/>
+    <module name="LeftCurly">
+      <property name="option" value="nl"/>
+    </module>
     <module name="NeedBraces"/>
-    <module name="RightCurly"/>
     <module name="AvoidInlineConditionals">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
@@ -99,6 +91,9 @@
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="UpperEll"/>
+    <module name="RightCurly">
+      <property name="option" value="alone"/>
+    </module>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="ignore"/>

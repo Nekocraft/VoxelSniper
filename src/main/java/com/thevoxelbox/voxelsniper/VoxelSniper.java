@@ -1,163 +1,310 @@
 package com.thevoxelbox.voxelsniper;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.bukkit.util.ChatPaginator;
 
-import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
+import com.martiansoftware.jsap.JSAP;
+import com.martiansoftware.jsap.JSAPException;
+import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.QualifiedSwitch;
+import com.martiansoftware.jsap.Switch;
+import com.martiansoftware.jsap.UnflaggedOption;
 
 /**
  * @author Voxel
  * 
  */
-public class VoxelSniper extends JavaPlugin {
+public class VoxelSniper extends JavaPlugin
+{
+    private VoxelSniperListener voxelSniperListener;
+    private SniperUserManager sniperUserManager;
 
-    private static final String PLUGINS_VOXEL_SNIPER_SNIPER_CONFIG_XML = "plugins/VoxelSniper/SniperConfig.xml";
+    private SniperConfiguration sniperConfiguration;
+    private final HelpJSAP gotoParser;
+    private final HelpJSAP vsParser;
 
-    private final VoxelSniperListener voxelSniperListener = new VoxelSniperListener(this);
+    private final HelpJSAP vParser;
 
     /**
-     * Load configuration.
+     * Default Constructor.
      */
-    public final void loadSniperConfiguration() {
-        try {
-            final File _configurationFile = new File(VoxelSniper.PLUGINS_VOXEL_SNIPER_SNIPER_CONFIG_XML);
-
-            if (!_configurationFile.exists()) {
-                this.saveSniperConfig();
-            }
-
-            final DocumentBuilderFactory _docFactory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder _docBuilder = _docFactory.newDocumentBuilder();
-            final Document _doc = _docBuilder.parse(_configurationFile);
-            _doc.normalize();
-            final Node _root = _doc.getFirstChild();
-            final NodeList _rnodes = _root.getChildNodes();
-            for (int _x = 0; _x < _rnodes.getLength(); _x++) {
-                final Node _n = _rnodes.item(_x);
-
-                if (!_n.hasChildNodes()) {
-                    continue;
-                }
-
-                if (_n.getNodeName().equals("SniperUndoCache")) {
-                    Sniper.setUndoCacheSize(Integer.parseInt(_n.getFirstChild().getNodeValue()));
-                }
-            }
-        } catch (final SAXException _ex) {
-            this.getLogger().log(Level.SEVERE, null, _ex);
-        } catch (final IOException _ex) {
-            this.getLogger().log(Level.SEVERE, null, _ex);
-        } catch (final ParserConfigurationException _ex) {
-            this.getLogger().log(Level.SEVERE, null, _ex);
+    public VoxelSniper()
+    {
+        this.gotoParser = new HelpJSAP("goto", "Teleporting to a coordinate in the current world.", ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
+        try
+        {
+            this.gotoParser.registerParameter(new UnflaggedOption("x", JSAP.INTEGER_PARSER, true, JSAP.NO_HELP));
+            this.gotoParser.registerParameter(new UnflaggedOption("z", JSAP.INTEGER_PARSER, true, JSAP.NO_HELP));
         }
+        catch (final JSAPException e)
+        {
+        }
+        this.vsParser = new HelpJSAP("vs", "VoxelSniper information command.", ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
+        try
+        {
+            this.vsParser.registerParameter(new QualifiedSwitch("range", JSAP.INTEGER_PARSER, null, false, 'r', "range", "If no range given, it will toggle range limitation. If range given, it will enable range limitation and set the range to the given value."));
+            this.vsParser.registerParameter(new Switch("list-brushes", JSAP.NO_SHORTFLAG, "list-brushes", "List all registered brushes."));
+            this.vsParser.registerParameter(new Switch("list-placement-options", JSAP.NO_SHORTFLAG, "list-placement-options", "List all placement options."));
+            this.vsParser.registerParameter(new Switch("list-filter-options", JSAP.NO_SHORTFLAG, "list-filter-options", "List all filter options."));
+            this.vsParser.registerParameter(new Switch("list-operation-options", JSAP.NO_SHORTFLAG, "list-operation-options", "List all operation options."));
+        }
+        catch (final JSAPException e)
+        {
+        }
+        this.vParser = new HelpJSAP("v", "Setting the voxel and datavalue to work with by either passing them to the command or pointing at a block.",
+                ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
+        try
+        {
+            this.vParser.registerParameter(new UnflaggedOption("material", JSAP.STRING_PARSER, false,
+                    "Material in [material][:id format]. If either one of them is missing it will be defaulted to 0."));
+        }
+        catch (final JSAPException e)
+        {
+        }
+
+    }
+
+    /**
+     * @return the sniperConfiguration
+     */
+    public final SniperConfiguration getSniperConfiguration()
+    {
+        return this.sniperConfiguration;
     }
 
     @Override
-    public final boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args) {
-        if (sender instanceof Player) {
-            final Player _p = (Player) sender;
-            final String _comm = command.getName();
-            if (args == null) {
-                if (!VoxelSniperListener.onCommand(_p, new String[0], _comm)) {
-                    if (_p.isOp()) {
-                        _p.sendMessage(ChatColor.RED + "Your name is not listed on the snipers.txt or you haven't /reload 'ed the server yet.");
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return true;
-                }
-            } else {
-                if (!VoxelSniperListener.onCommand(_p, args, _comm)) {
-                    if (_p.isOp()) {
-                        _p.sendMessage(ChatColor.RED + "Your name is not listed on the snipers.txt or you haven't /reload 'ed the server yet.");
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return true;
-                }
+    public final boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args)
+    {
+        if (sender instanceof Player)
+        {
+            final String[] strippedArgs = Arrays.copyOfRange(args, 1, args.length);
+
+            final Player player = (Player) sender;
+            final SniperUser sniperUser = this.sniperUserManager.getUser(player);
+            final String lowerCaseCommandName = command.getName();
+
+            if ("goto".equals(lowerCaseCommandName))
+            {
+                return this.commandGoto(strippedArgs, player);
+            }
+            else if ("vs".equals(lowerCaseCommandName))
+            {
+                return this.commandVs(strippedArgs, sniperUser);
+            }
+            else if ("v".equals(lowerCaseCommandName))
+            {
+                return this.commandV(strippedArgs, sniperUser);
+            }
+            else if ("vr".equals(lowerCaseCommandName))
+            {
+                return this.commandVr(strippedArgs);
+            }
+            else if ("d".equals(lowerCaseCommandName))
+            {
+                return this.commandD(strippedArgs);
+            }
+            else if ("b".equals(lowerCaseCommandName))
+            {
+                return this.commandB(strippedArgs);
+            }
+            else if ("p".equals(lowerCaseCommandName))
+            {
+                return this.commandP(strippedArgs);
             }
         }
-
-        System.out.println("Not instanceof Player!");
-
         return false;
     }
 
     @Override
-    public final void onEnable() {
+    public final void onEnable()
+    {
+        this.voxelSniperListener = new VoxelSniperListener();
+        this.sniperUserManager = new SniperUserManager();
+        Bukkit.getPluginManager().registerEvents(this.voxelSniperListener, this);
+
+        this.reloadConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
+        this.sniperConfiguration = new SniperConfiguration(this.getConfig());
 
         MetricsManager.getInstance().start();
 
-        this.loadSniperConfiguration();
+    }
 
-        final PluginManager _pm = Bukkit.getPluginManager();
-        _pm.registerEvents(this.voxelSniperListener, this);
+    private boolean commandB(final String[] args)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    private boolean commandD(final String[] args)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     /**
-     * Save configuration.
+     * @param args
+     * @param player
      */
-    public final void saveSniperConfig() {
-        try {
-            this.getLogger().info("Saving Configuration.....");
+    private boolean commandGoto(final String[] args, final Player player)
+    {
+        if (player.hasPermission("voxelsniper.goto"))
+        {
+            final JSAPResult result = this.gotoParser.parse(args);
 
-            final File _f = new File(VoxelSniper.PLUGINS_VOXEL_SNIPER_SNIPER_CONFIG_XML);
-            _f.getParentFile().mkdirs();
+            if (this.sendHelpOrErrorMessageToPlayer(result, player, this.gotoParser))
+            {
+                return true;
+            }
 
-            final DocumentBuilderFactory _docFactory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder _docBuilder = _docFactory.newDocumentBuilder();
-            final Document _doc = _docBuilder.newDocument();
-            final Element _vsElement = _doc.createElement("VoxelSniper");
+            final int x = result.getInt("x");
+            final int z = result.getInt("z");
 
-            final Element _undoCache = _doc.createElement("SniperUndoCache");
-            _undoCache.appendChild(_doc.createTextNode(Sniper.getUndoCacheSize() + ""));
-            _vsElement.appendChild(_undoCache);
-            _vsElement.normalize();
+            player.teleport(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z), z), TeleportCause.PLUGIN);
 
-            final TransformerFactory _transformerFactory = TransformerFactory.newInstance();
-            _transformerFactory.setAttribute("indent-number", 4);
-            final Transformer _transformer = _transformerFactory.newTransformer();
-            _transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            _transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            _transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "4");
-            final DOMSource _source = new DOMSource(_vsElement);
-            final StreamResult _result = new StreamResult(_f);
-            _transformer.transform(_source, _result);
-
-            this.getLogger().info("Configuration Saved!!");
-        } catch (final TransformerException _ex) {
-            Logger.getLogger(VoxelSniperListener.class.getName()).log(Level.SEVERE, null, _ex);
-        } catch (final ParserConfigurationException _ex) {
-            Logger.getLogger(VoxelSniperListener.class.getName()).log(Level.SEVERE, null, _ex);
         }
+
+        return true;
+    }
+
+    private boolean commandP(final String[] args)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /**
+     * @param args
+     * @param player
+     */
+    private boolean commandV(final String[] args, final SniperUser sniperUser)
+    {
+        final JSAPResult result = this.vParser.parse(args);
+        final Player player = sniperUser.getPlayer();
+
+        if (this.sendHelpOrErrorMessageToPlayer(result, player, this.vParser))
+        {
+            return true;
+        }
+
+        final String material = result.getString("material");
+        if (material != null)
+        {
+            final String[] splitedMaterial = material.split(":");
+            Material targetMaterial = Material.AIR;
+            byte targetData = (byte) 0;
+
+            if (splitedMaterial[0] != null && !splitedMaterial[0].isEmpty())
+            {
+                try
+                {
+                    final int id = Integer.parseInt(splitedMaterial[0]);
+                    final Material parsedMaterial = Material.getMaterial(id);
+                    if (parsedMaterial != null && parsedMaterial.isBlock())
+                    {
+                        targetMaterial = parsedMaterial;
+                    }
+                }
+                catch (final NumberFormatException ex)
+                {
+                    final Material parsedMaterial = Material.matchMaterial(splitedMaterial[0]);
+                    if (parsedMaterial != null && parsedMaterial.isBlock())
+                    {
+                        targetMaterial = parsedMaterial;
+                    }
+                }
+            }
+
+            if (splitedMaterial.length > 1 && splitedMaterial[1] != null && !splitedMaterial[1].isEmpty())
+            {
+                try
+                {
+                    final byte parsedData = Byte.parseByte(splitedMaterial[1]);
+                    targetData = parsedData;
+                }
+                catch (final NumberFormatException ex)
+                {
+                    // TODO: Report to user that the value is invalid.
+                }
+            }
+
+            sniperUser.getActiveToolConfiguration().setMaterialData(new MaterialData(targetMaterial, targetData));
+        }
+        else
+        {
+            // get material you are pointing at.
+            Iterator<Block> iterator = new SniperBlockIterator(player.getLocation(), 150);
+
+            while (iterator.hasNext())
+            {
+                Block block = iterator.next();
+                if (block == null)
+                {
+                    continue;
+                }
+
+                if (block.getType() != Material.AIR)
+                {
+                    sniperUser.getActiveToolConfiguration().setMaterialData(new MaterialData(block.getType(), block.getData()));
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean commandVr(final String[] args)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    private boolean commandVs(final String[] args, final SniperUser sniperUser)
+    {
+        final JSAPResult result = this.vsParser.parse(args);
+        final Player player = sniperUser.getPlayer();
+
+        if (this.sendHelpOrErrorMessageToPlayer(result, player, this.vsParser))
+        {
+            return true;
+        }
+
+        // TODO: Execute
+
+        return true;
+    }
+
+    /**
+     * @param result
+     * @param player
+     * @param helpJSAP
+     * @return if a message was sent.
+     */
+    private boolean sendHelpOrErrorMessageToPlayer(final JSAPResult result, final Player player, final HelpJSAP helpJSAP)
+    {
+        final List<String> output = helpJSAP.writeHelpOrErrorMessageIfRequired(result);
+        if (!output.isEmpty())
+        {
+            for (final String string : output)
+            {
+                player.sendMessage(string);
+            }
+            return true;
+        }
+        return false;
     }
 }
