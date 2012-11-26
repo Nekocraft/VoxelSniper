@@ -88,5 +88,5 @@ public class SniperUser implements User
     {
         this.player.sendMessage(message);
     }
-
+    
 }

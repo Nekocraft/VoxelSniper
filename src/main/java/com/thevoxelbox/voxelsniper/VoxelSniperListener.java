@@ -5,17 +5,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.thevoxelbox.voxelgunsmith.VoxelGunsmith;
+
 /**
  * @author Voxel
  * 
  */
 public class VoxelSniperListener implements Listener
 {
+	private SniperUserManager sniperUserManager;
+	
     /**
+     * @param sniperUserManager 
      * 
      */
-    public VoxelSniperListener()
+    public VoxelSniperListener(SniperUserManager sniperUserManager)
     {
+    	this.sniperUserManager = sniperUserManager;
         MetricsManager.setSnipeCounterInitTimeStamp(System.currentTimeMillis());
     }
 
@@ -25,29 +31,15 @@ public class VoxelSniperListener implements Listener
     @EventHandler
     public final void onPlayerInteract(final PlayerInteractEvent event)
     {
-        if (event.isBlockInHand())
-        {
-            return;
-        }
-        final Player _player = event.getPlayer();
-
-        try
-        {
-            final Sniper _vs = VoxelSniper.getSniperPermissionHelper().getSniperInstance(_player);
-            if (_vs == null)
-            {
-                return;
-            }
-            else if (_vs.snipe(_player, event.getAction(), event.getMaterial(), event.getClickedBlock(), event.getBlockFace()))
-            {
-                MetricsManager.increaseSnipeCounter();
-                event.setCancelled(true);
-            }
-        }
-        catch (final Exception _ex)
-        {
-            return;
-        }
+    	Player executingPlayer = event.getPlayer();
+    	
+    	if(executingPlayer != null) 
+    	{
+    		SniperUser sniperUser = this.sniperUserManager.getUser(executingPlayer);
+    		
+    		// TODO: Execute snipe over sniperUser.
+    		// TODO: Cancel event if sniper was successfull.
+    	}
     }
 
 }
