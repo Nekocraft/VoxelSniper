@@ -19,7 +19,6 @@ import com.thevoxelbox.voxelgunsmith.User;
  */
 public class SniperUser implements User
 {
-
     private final Player player;
     private final Map<String, ToolConfiguration> toolConfigurations = new HashMap<String, ToolConfiguration>();
     private final Map<String, List<Brush>> toolBrushInstances = new HashMap<String, List<Brush>>();
@@ -39,13 +38,11 @@ public class SniperUser implements User
     public final Brush getActiveBrush()
     {
         final MaterialData matData = new MaterialData(this.player.getItemInHand().getType(), this.player.getItemInHand().getData().getData());
-        if (this.toolMappingArrow.containsKey(matData))
+        String toolId = this.getToolId(matData);
+
+        if (toolId != null)
         {
-            return this.getBrush(this.toolMappingArrow.get(matData));
-        }
-        else if (this.toolMappingPowder.containsKey(matData))
-        {
-            return this.getBrush(this.toolMappingPowder.get(matData));
+            return this.getBrush(toolId);
         }
         return null;
     }
@@ -54,13 +51,11 @@ public class SniperUser implements User
     public final ToolConfiguration getActiveToolConfiguration()
     {
         final MaterialData matData = new MaterialData(this.player.getItemInHand().getType(), this.player.getItemInHand().getData().getData());
-        if (this.toolMappingArrow.containsKey(matData))
+        String toolId = this.getToolId(matData);
+
+        if (toolId != null)
         {
-            return this.getToolConfiguration(this.toolMappingArrow.get(matData));
-        }
-        else if (this.toolMappingPowder.containsKey(matData))
-        {
-            return this.getToolConfiguration(this.toolMappingPowder.get(matData));
+            return this.getToolConfiguration(toolId);
         }
         return null;
     }
@@ -88,5 +83,16 @@ public class SniperUser implements User
     {
         this.player.sendMessage(message);
     }
-    
+
+    @Override
+    public final String getToolId(final MaterialData itemInHand)
+    {
+        String returnValue = null;
+        returnValue = this.toolMappingArrow.get(itemInHand);
+        if (returnValue != null)
+        {
+            return returnValue;
+        }
+        return this.toolMappingPowder.get(itemInHand);
+    }
 }

@@ -13,13 +13,13 @@ import com.thevoxelbox.voxelgunsmith.VoxelGunsmith;
  */
 public class VoxelSniperListener implements Listener
 {
-	private SniperUserManager sniperUserManager;
-	
+    private final SniperUserManager sniperUserManager;
+
     /**
      * @param sniperUserManager 
      * 
      */
-    public VoxelSniperListener(SniperUserManager sniperUserManager)
+    public VoxelSniperListener(final SniperUserManager sniperUserManager)
     {
     	this.sniperUserManager = sniperUserManager;
         MetricsManager.setSnipeCounterInitTimeStamp(System.currentTimeMillis());

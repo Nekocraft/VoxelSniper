@@ -10,7 +10,7 @@ import org.bukkit.util.NumberConversions;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
-import com.thevoxelbox.voxelsniper.brush.Brush;
+import com.thevoxelbox.voxelgunsmith.Brush;
 
 /**
  * @author Monofraps
