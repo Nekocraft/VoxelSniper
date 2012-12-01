@@ -67,10 +67,10 @@ public class SniperBrushManager implements BrushManager
                 {
                     return brush.getClass().newInstance();
                 }
-                catch (final InstantiationException _e)
+                catch (final InstantiationException e)
                 {
                 }
-                catch (final IllegalAccessException _e)
+                catch (final IllegalAccessException e)
                 {
                 }
             }
