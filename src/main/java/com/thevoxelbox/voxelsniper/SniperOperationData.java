@@ -1,5 +1,6 @@
 package com.thevoxelbox.voxelsniper;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import com.thevoxelbox.voxelgunsmith.OperationData;
@@ -44,6 +45,41 @@ public final class SniperOperationData implements OperationData
     public ToolConfiguration getToolConfiguration()
     {
         return this.toolConfiguration;
+    }
+
+    @Override
+    public void perform(final Block block)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void performManual(final Block block, final byte data)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void performManual(final Block block, final Material material)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void performManual(final Block block, final Material material, byte data)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void performManual(final Block block, final Material material, final byte data, final boolean update)
+    {
+        // TODO Auto-generated method stub
+
     }
 
 }

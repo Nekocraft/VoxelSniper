@@ -1,5 +1,8 @@
 package com.thevoxelbox.voxelsniper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.thevoxelbox.voxelgunsmith.Brush;
 import com.thevoxelbox.voxelgunsmith.BrushParameterManager;
 import com.thevoxelbox.voxelgunsmith.BrushParameters;
@@ -14,32 +17,67 @@ import com.thevoxelbox.voxelgunsmith.User;
 public class SniperBrushParameterManager implements BrushParameterManager
 {
 
-    @Override
-    public void clear()
-    {
-        // TODO Auto-generated method stub
+    private Map<User, Map<String, Map<Class<? extends Brush>, BrushParameters>>> mapping = new HashMap<User, Map<String, Map<Class<? extends Brush>, BrushParameters>>>();
 
+    @Override
+    public final void clear()
+    {
+        for (Map<String, Map<Class<? extends Brush>, BrushParameters>> userMap : mapping.values())
+        {
+            for (Map<Class<? extends Brush>, BrushParameters> parametersMap : userMap.values())
+            {
+                parametersMap.clear();
+            }
+        }
     }
 
     @Override
-    public void clear(final User user)
+    public final void clear(final User user)
     {
-        // TODO Auto-generated method stub
-
+        Map<String, Map<Class<? extends Brush>, BrushParameters>> userMap = mapping.get(user);
+        for (Map<Class<? extends Brush>, BrushParameters> parametersMap : userMap.values())
+        {
+            parametersMap.clear();
+        }
     }
 
     @Override
     public void clear(final User user, final String toolId)
     {
-        // TODO Auto-generated method stub
-
+        Map<String, Map<Class<? extends Brush>, BrushParameters>> userMap = mapping.get(user);
+        if (userMap == null)
+        {
+            return;
+        }
+        Map<Class<? extends Brush>, BrushParameters> parametersMap = userMap.get(toolId);
+        if (parametersMap == null)
+        {
+            return;
+        }
+        parametersMap.clear();
     }
 
     @Override
     public final BrushParameters getInstance(final User user, final String toolId, final Brush brush)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, Map<Class<? extends Brush>, BrushParameters>> userMap = mapping.get(user);
+        if (userMap == null)
+        {
+            userMap = new HashMap<String, Map<Class<? extends Brush>, BrushParameters>>();
+            mapping.put(user, userMap);
+        }
+        Map<Class<? extends Brush>, BrushParameters> toolIdMap = userMap.get(toolId);
+        if (toolIdMap == null) 
+        {
+            toolIdMap = new HashMap<Class<? extends Brush>, BrushParameters>();
+            userMap.put(toolId, toolIdMap);
+        }
+        BrushParameters result = toolIdMap.get(brush.getClass());
+        if (result == null)
+        {
+            // TODO: create and store new BrushParametrs instance.
+        }
+        return result;
     }
 
     @Override

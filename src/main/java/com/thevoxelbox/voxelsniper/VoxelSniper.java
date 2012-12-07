@@ -1,8 +1,10 @@
 package com.thevoxelbox.voxelsniper;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,6 +27,8 @@ import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
 import com.thevoxelbox.voxelgunsmith.Brush;
 import com.thevoxelbox.voxelgunsmith.VoxelGunsmith;
+import com.thevoxelbox.voxelsniper.jsap.HelpJSAP;
+import com.thevoxelbox.voxelsniper.jsap.NullableIntegerStringParser;
 
 /**
  * @author Voxel
@@ -357,7 +361,55 @@ public class VoxelSniper extends JavaPlugin
         }
 
         // TODO: Execute
+        String[] materials = result.getStringArray("material");
+        Set<MaterialData> newFilter = new HashSet<MaterialData>();
 
+        for (String material : materials)
+        {
+            final String[] splitedMaterial = material.split(":");
+            Material targetMaterial = Material.AIR;
+            byte targetData = (byte) 0;
+
+            if (splitedMaterial[0] != null && !splitedMaterial[0].isEmpty())
+            {
+                try
+                {
+                    final int id = Integer.parseInt(splitedMaterial[0]);
+                    final Material parsedMaterial = Material.getMaterial(id);
+                    if (parsedMaterial != null && parsedMaterial.isBlock())
+                    {
+                        targetMaterial = parsedMaterial;
+                    }
+                }
+                catch (final NumberFormatException ex)
+                {
+                    final Material parsedMaterial = Material.matchMaterial(splitedMaterial[0]);
+                    if (parsedMaterial != null && parsedMaterial.isBlock())
+                    {
+                        targetMaterial = parsedMaterial;
+                    }
+                }
+            }
+
+            if (splitedMaterial.length > 1 && splitedMaterial[1] != null && !splitedMaterial[1].isEmpty())
+            {
+                try
+                {
+                    final byte parsedData = Byte.parseByte(splitedMaterial[1]);
+                    targetData = parsedData;
+                }
+                catch (final NumberFormatException ex)
+                {
+                    // TODO: Report to user that the value is invalid.
+                    continue;
+                }
+            }
+            
+            newFilter.add(new MaterialData(targetMaterial, targetData));
+        }
+        
+        // TODO: finish executing
+        
         return true;
     }
 

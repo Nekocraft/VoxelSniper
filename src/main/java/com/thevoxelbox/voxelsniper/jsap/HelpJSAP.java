@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelsniper;
+package com.thevoxelbox.voxelsniper.jsap;
 
 import java.io.IOException;
 import java.io.PrintWriter;

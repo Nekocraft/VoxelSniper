@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.bukkit.material.MaterialData;
 
-import com.thevoxelbox.voxelgunsmith.Performer;
 import com.thevoxelbox.voxelgunsmith.ToolConfiguration;
 
 /**
@@ -15,26 +14,12 @@ import com.thevoxelbox.voxelgunsmith.ToolConfiguration;
  */
 public class SniperToolConfiguration implements ToolConfiguration
 {
-
-    private Performer performer;
     private MaterialData materialData;
     private Set<MaterialData> filter;
     private int brushSize;
     private int height;
     private double rangeLimit;
     private boolean rangeLimited;
-
-    @Override
-    public final Performer getPerformer()
-    {
-        return this.performer;
-    }
-
-    @Override
-    public final void setPerformer(final Performer performer)
-    {
-        this.performer = performer;
-    }
 
     @Override
     public final MaterialData getMaterialData()

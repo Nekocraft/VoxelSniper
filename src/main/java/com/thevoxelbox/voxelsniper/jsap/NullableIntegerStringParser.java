@@ -1,4 +1,4 @@
-package com.thevoxelbox.voxelsniper;
+package com.thevoxelbox.voxelsniper.jsap;
 
 import com.martiansoftware.jsap.StringParser;
 import com.martiansoftware.jsap.ParseException;
