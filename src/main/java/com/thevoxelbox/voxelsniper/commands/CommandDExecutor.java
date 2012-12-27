@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandDExecutor implements CommandExecutor
 {

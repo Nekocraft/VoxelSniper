@@ -19,12 +19,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandBExecutor implements CommandExecutor
 {
     private final VoxelSniper plugin;
-    private HelpJSAP parser;
+    private final HelpJSAP parser;
 
     public CommandBExecutor(final VoxelSniper voxelSniper)
     {

@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
  */
 public class SniperUserManager
 {
-    private Map<Player, SniperUser> playerUserMap = new HashMap<Player, SniperUser>();
+    private final Map<Player, SniperUser> playerUserMap = new HashMap<Player, SniperUser>();
 
     /**
      * @param player

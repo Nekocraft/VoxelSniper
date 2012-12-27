@@ -60,7 +60,7 @@ public class NullableIntegerStringParser extends StringParser
             return arg;
         }
 
-        Integer result = null;
+        Integer result;
         try
         {
             result = Integer.decode(arg);

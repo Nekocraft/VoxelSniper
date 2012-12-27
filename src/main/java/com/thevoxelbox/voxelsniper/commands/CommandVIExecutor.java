@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandVIExecutor implements CommandExecutor
 {

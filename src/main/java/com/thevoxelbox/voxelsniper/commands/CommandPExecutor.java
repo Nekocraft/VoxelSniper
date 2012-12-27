@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandPExecutor implements CommandExecutor
 {

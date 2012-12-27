@@ -111,7 +111,7 @@ public final class MetricsManager
                     final long initializationTimeStamp = MetricsManager.snipeCounterInitTimeStamp;
                     final double deltaTime = System.currentTimeMillis() - initializationTimeStamp;
 
-                    double avg = 0;
+                    double avg;
                     if (deltaTime < 60000)
                     {
                         avg = currentSnipes;

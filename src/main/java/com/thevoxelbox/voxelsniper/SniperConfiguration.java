@@ -10,7 +10,7 @@ public class SniperConfiguration
     private static final String MAX_BRUSH_SIZE_PATH = "sniper.max-brush-size";
     private static final String MAX_UNDO_CACHE_SIZE_PATH = "sniper.max-undo-cache-size";
 
-    private FileConfiguration configuration;
+    private final FileConfiguration configuration;
 
     /**
      * @param configuration

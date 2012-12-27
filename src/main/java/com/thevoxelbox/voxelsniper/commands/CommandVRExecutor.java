@@ -19,7 +19,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.ChatPaginator;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandVRExecutor implements CommandExecutor
 {
@@ -89,8 +89,7 @@ public class CommandVRExecutor implements CommandExecutor
                 {
                     try
                     {
-                        final byte parsedData = Byte.parseByte(splitedMaterial[1]);
-                        targetData = parsedData;
+                        targetData = Byte.parseByte(splitedMaterial[1]);
                     }
                     catch (final NumberFormatException ex)
                     {

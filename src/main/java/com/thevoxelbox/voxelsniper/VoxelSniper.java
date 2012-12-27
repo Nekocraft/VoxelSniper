@@ -23,7 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class VoxelSniper extends JavaPlugin
 {
-    private VoxelSniperListener voxelSniperListener;
     private SniperUserManager sniperUserManager;
     private SniperConfiguration sniperConfiguration;
 
@@ -64,9 +63,8 @@ public class VoxelSniper extends JavaPlugin
     @Override
     public final void onEnable()
     {
-        this.voxelSniperListener = new VoxelSniperListener(this.sniperUserManager);
         this.sniperUserManager = new SniperUserManager();
-        Bukkit.getPluginManager().registerEvents(this.voxelSniperListener, this);
+        Bukkit.getPluginManager().registerEvents(new VoxelSniperListener(this.sniperUserManager), this);
 
         this.reloadConfig();
         this.getConfig().options().copyDefaults(true);

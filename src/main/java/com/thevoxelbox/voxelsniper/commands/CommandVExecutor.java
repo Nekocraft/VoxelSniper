@@ -21,7 +21,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.ChatPaginator;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandVExecutor implements CommandExecutor
 {
@@ -88,8 +88,7 @@ public class CommandVExecutor implements CommandExecutor
                 {
                     try
                     {
-                        final byte parsedData = Byte.parseByte(splitedMaterial[1]);
-                        targetData = parsedData;
+                        targetData = Byte.parseByte(splitedMaterial[1]);
                     }
                     catch (final NumberFormatException ex)
                     {
@@ -102,7 +101,7 @@ public class CommandVExecutor implements CommandExecutor
             else
             {
                 // get material you are pointing at.
-                final Iterator<Block> iterator = new SniperBlockIterator(player.getLocation(), VoxelSniper.MAXIMUM_SCAN_RANGE);
+                final Iterator<Block> iterator = new SniperBlockIterator(player.getLocation(), MAXIMUM_SCAN_RANGE);
 
                 while (iterator.hasNext())
                 {

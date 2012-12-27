@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.util.ChatPaginator;
 
 /**
- * @author: MikeMatrix
+ * @author MikeMatrix
  */
 public class CommandUExecutor implements CommandExecutor
 {

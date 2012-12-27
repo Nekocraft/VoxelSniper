@@ -13,11 +13,8 @@ import org.bukkit.util.Vector;
 public class SniperBlockIterator implements Iterator<Block>
 {
     private final World world;
-    private final Vector start;
-    private final Vector direction;
     private double maxLength;
     private final Vector step;
-    private final Vector cellBoundary;
     private final Vector tDelta;
     private final Vector tMax;
     private final Vector current;
@@ -31,30 +28,30 @@ public class SniperBlockIterator implements Iterator<Block>
     public SniperBlockIterator(final World world, final Vector start, final Vector direction, final double maxLength)
     {
         this.world = world;
-        this.start = start.clone();
+        final Vector start1 = start.clone();
 
         this.current = start.clone();
         this.current.setX(Math.round(this.current.getX()));
         this.current.setY(Math.round(this.current.getY()));
         this.current.setZ(Math.round(this.current.getZ()));
 
-        this.direction = direction.clone().normalize();
+        final Vector direction1 = direction.clone().normalize();
         this.maxLength = maxLength;
 
         this.step = new Vector();
-        this.step.setX(Math.signum(this.direction.getX()));
-        this.step.setY(Math.signum(this.direction.getY()));
-        this.step.setZ(Math.signum(this.direction.getZ()));
+        this.step.setX(Math.signum(direction1.getX()));
+        this.step.setY(Math.signum(direction1.getY()));
+        this.step.setZ(Math.signum(direction1.getZ()));
 
-        this.cellBoundary = new Vector();
-        this.cellBoundary.setX(this.current.getX() + (this.step.getX() > 0 ? 1 : 0));
-        this.cellBoundary.setY(this.current.getY() + (this.step.getY() > 0 ? 1 : 0));
-        this.cellBoundary.setZ(this.current.getZ() + (this.step.getZ() > 0 ? 1 : 0));
+        final Vector cellBoundary = new Vector();
+        cellBoundary.setX(this.current.getX() + (this.step.getX() > 0 ? 1 : 0));
+        cellBoundary.setY(this.current.getY() + (this.step.getY() > 0 ? 1 : 0));
+        cellBoundary.setZ(this.current.getZ() + (this.step.getZ() > 0 ? 1 : 0));
 
         this.tMax = new Vector();
-        this.tMax.setX((this.cellBoundary.getX() - this.start.getX()) / this.direction.getX());
-        this.tMax.setY((this.cellBoundary.getY() - this.start.getY()) / this.direction.getY());
-        this.tMax.setZ((this.cellBoundary.getZ() - this.start.getZ()) / this.direction.getZ());
+        this.tMax.setX((cellBoundary.getX() - start1.getX()) / direction1.getX());
+        this.tMax.setY((cellBoundary.getY() - start1.getY()) / direction1.getY());
+        this.tMax.setZ((cellBoundary.getZ() - start1.getZ()) / direction1.getZ());
 
         if (Double.isNaN(this.tMax.getX()))
         {
@@ -70,9 +67,9 @@ public class SniperBlockIterator implements Iterator<Block>
         }
 
         this.tDelta = new Vector();
-        this.tDelta.setX(this.step.getX() / this.direction.getX());
-        this.tDelta.setY(this.step.getY() / this.direction.getY());
-        this.tDelta.setZ(this.step.getZ() / this.direction.getZ());
+        this.tDelta.setX(this.step.getX() / direction1.getX());
+        this.tDelta.setY(this.step.getY() / direction1.getY());
+        this.tDelta.setZ(this.step.getZ() / direction1.getZ());
 
         if (Double.isNaN(this.tDelta.getX()))
         {
@@ -91,23 +88,23 @@ public class SniperBlockIterator implements Iterator<Block>
         double secondDirection = 0;
         double thirdDirection = 0;
 
-        if (Math.abs(this.direction.getX()) > mainDirection)
+        if (Math.abs(direction1.getX()) > mainDirection)
         {
-            mainDirection = Math.abs(this.direction.getX());
-            secondDirection = Math.abs(this.direction.getY());
-            thirdDirection = Math.abs(this.direction.getZ());
+            mainDirection = Math.abs(direction1.getX());
+            secondDirection = Math.abs(direction1.getY());
+            thirdDirection = Math.abs(direction1.getZ());
         }
-        if (Math.abs(this.direction.getY()) > mainDirection)
+        if (Math.abs(direction1.getY()) > mainDirection)
         {
-            mainDirection = Math.abs(this.direction.getY());
-            secondDirection = Math.abs(this.direction.getZ());
-            thirdDirection = Math.abs(this.direction.getX());
+            mainDirection = Math.abs(direction1.getY());
+            secondDirection = Math.abs(direction1.getZ());
+            thirdDirection = Math.abs(direction1.getX());
         }
-        if (Math.abs(this.direction.getZ()) > mainDirection)
+        if (Math.abs(direction1.getZ()) > mainDirection)
         {
-            mainDirection = Math.abs(this.direction.getZ());
-            secondDirection = Math.abs(this.direction.getX());
-            thirdDirection = Math.abs(this.direction.getY());
+            mainDirection = Math.abs(direction1.getZ());
+            secondDirection = Math.abs(direction1.getX());
+            thirdDirection = Math.abs(direction1.getY());
         }
 
         this.maxLength = Math.round(maxLength / (Math.sqrt(mainDirection * mainDirection + secondDirection * secondDirection + thirdDirection * thirdDirection) / mainDirection));

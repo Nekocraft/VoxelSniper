@@ -44,7 +44,7 @@ public class SniperUser implements User
     public final boolean execute(final MaterialData itemInHand)
     {
         String toolId;
-        OperationData operationData = null;
+        OperationData operationData;
 
         toolId = this.getArrowToolId(itemInHand);
         if (toolId != null)
@@ -176,7 +176,7 @@ public class SniperUser implements User
     @Override
     public final String getToolId(final MaterialData itemInHand)
     {
-        String returnValue = null;
+        String returnValue;
         returnValue = this.toolMappingArrow.get(itemInHand);
         if (returnValue != null)
         {
@@ -232,15 +232,12 @@ public class SniperUser implements User
             Brush brush = brushClass.newInstance();
             this.toolBrush.put(toolId, brush);
             brushInstances.add(brush);
-            return;
         }
         catch (final InstantiationException e)
         {
-            return;
         }
         catch (final IllegalAccessException e)
         {
-            return;
         }
     }
 }

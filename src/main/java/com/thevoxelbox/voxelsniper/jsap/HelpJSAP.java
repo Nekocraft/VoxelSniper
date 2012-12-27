@@ -28,15 +28,15 @@ public class HelpJSAP extends JSAP
 
     /**
      * @param name
-     * @param explaination
+     * @param explanation
      * @param screenWidth
      */
-    public HelpJSAP(final String name, final String explaination, final int screenWidth)
+    public HelpJSAP(final String name, final String explanation, final int screenWidth)
     {
         super();
 
         this.name = name;
-        this.explanation = explaination;
+        this.explanation = explanation;
         this.screenWidth = screenWidth;
 
         try
@@ -50,7 +50,7 @@ public class HelpJSAP extends JSAP
 
     /**
      * @param name
-     * @param explaination
+     * @param explanation
      * @param screenWidth
      * @param resourceName
      *
@@ -59,12 +59,12 @@ public class HelpJSAP extends JSAP
      * @throws JSAPException
      *         if the configuration is not valid
      */
-    public HelpJSAP(final String name, final String explaination, final int screenWidth, final String resourceName) throws IOException, JSAPException
+    public HelpJSAP(final String name, final String explanation, final int screenWidth, final String resourceName) throws IOException, JSAPException
     {
         super(resourceName);
 
         this.name = name;
-        this.explanation = explaination;
+        this.explanation = explanation;
         this.screenWidth = screenWidth;
 
         try
@@ -78,7 +78,7 @@ public class HelpJSAP extends JSAP
 
     /**
      * @param name
-     * @param explaination
+     * @param explanation
      * @param screenWidth
      * @param jsapXML
      *
@@ -87,12 +87,12 @@ public class HelpJSAP extends JSAP
      * @throws JSAPException
      *         if the configuration is not valid
      */
-    public HelpJSAP(final String name, final String explaination, final int screenWidth, final URL jsapXML) throws IOException, JSAPException
+    public HelpJSAP(final String name, final String explanation, final int screenWidth, final URL jsapXML) throws IOException, JSAPException
     {
         super(jsapXML);
 
         this.name = name;
-        this.explanation = explaination;
+        this.explanation = explanation;
         this.screenWidth = screenWidth;
 
         try
@@ -157,7 +157,6 @@ public class HelpJSAP extends JSAP
 
     /**
      * @param jsapResult
-     * @param writer
      *
      * @return if something has been written on writer.
      */
@@ -179,9 +178,9 @@ public class HelpJSAP extends JSAP
             returnValue.add("Usage:");
 
             List<?> l = StringUtils.wrapToList(this.name + " " + this.getUsage(), this.screenWidth);
-            for (final Iterator<?> i = l.iterator(); i.hasNext(); )
+            for (final Object aL : l)
             {
-                returnValue.add("  " + i.next().toString());
+                returnValue.add("  " + aL.toString());
             }
 
             if (this.explanation != null)
@@ -189,9 +188,9 @@ public class HelpJSAP extends JSAP
                 returnValue.add("");
                 returnValue.add("");
                 l = StringUtils.wrapToList(this.explanation, this.screenWidth);
-                for (final Iterator<?> i = l.iterator(); i.hasNext(); )
+                for (final Object aL : l)
                 {
-                    final String next = (String) i.next();
+                    final String next = (String) aL;
                     returnValue.add(next);
                 }
             }
