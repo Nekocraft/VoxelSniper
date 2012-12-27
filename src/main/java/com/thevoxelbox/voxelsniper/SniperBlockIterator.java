@@ -10,7 +10,7 @@ import org.bukkit.util.Vector;
 /**
  * @author MikeMatrix
  */
-class SniperBlockIterator implements Iterator<Block>
+public class SniperBlockIterator implements Iterator<Block>
 {
     private final World world;
     private final Vector start;
