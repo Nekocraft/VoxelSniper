@@ -10,21 +10,21 @@ import org.bukkit.entity.Player;
  */
 public class SniperUserManager
 {
-	private Map<Player, SniperUser> playerUserMap = new HashMap<Player, SniperUser>();
+    private Map<Player, SniperUser> playerUserMap = new HashMap<Player, SniperUser>();
 
-	/**
-	 * @param player
-	 *
-	 * @return SniperUser
-	 */
-	public final SniperUser getUser(final Player player)
-	{
-		SniperUser returnUser = playerUserMap.get(player);
-		if (returnUser == null)
-		{
-			returnUser = new SniperUser(player);
-			playerUserMap.put(player, returnUser);
-		}
-		return returnUser;
-	}
+    /**
+     * @param player
+     *
+     * @return SniperUser
+     */
+    public final SniperUser getUser(final Player player)
+    {
+        SniperUser returnUser = playerUserMap.get(player);
+        if (returnUser == null)
+        {
+            returnUser = new SniperUser(player);
+            playerUserMap.put(player, returnUser);
+        }
+        return returnUser;
+    }
 }

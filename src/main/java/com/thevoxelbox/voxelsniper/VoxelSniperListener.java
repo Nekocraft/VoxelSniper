@@ -10,31 +10,31 @@ import org.bukkit.event.player.PlayerInteractEvent;
  */
 public class VoxelSniperListener implements Listener
 {
-	private final SniperUserManager sniperUserManager;
+    private final SniperUserManager sniperUserManager;
 
-	/**
-	 * @param sniperUserManager
-	 */
-	public VoxelSniperListener(final SniperUserManager sniperUserManager)
-	{
-		this.sniperUserManager = sniperUserManager;
-		MetricsManager.setSnipeCounterInitTimeStamp(System.currentTimeMillis());
-	}
+    /**
+     * @param sniperUserManager
+     */
+    public VoxelSniperListener(final SniperUserManager sniperUserManager)
+    {
+        this.sniperUserManager = sniperUserManager;
+        MetricsManager.setSnipeCounterInitTimeStamp(System.currentTimeMillis());
+    }
 
-	/**
-	 * @param event
-	 */
-	@EventHandler
-	public final void onPlayerInteract(final PlayerInteractEvent event)
-	{
-		Player executingPlayer = event.getPlayer();
+    /**
+     * @param event
+     */
+    @EventHandler
+    public final void onPlayerInteract(final PlayerInteractEvent event)
+    {
+        Player executingPlayer = event.getPlayer();
 
-		if (executingPlayer != null)
-		{
-			SniperUser sniperUser = this.sniperUserManager.getUser(executingPlayer);
+        if (executingPlayer != null)
+        {
+            SniperUser sniperUser = this.sniperUserManager.getUser(executingPlayer);
 
-			event.setCancelled(sniperUser.execute(executingPlayer.getItemInHand().getData()));
-		}
-	}
+            event.setCancelled(sniperUser.execute(executingPlayer.getItemInHand().getData()));
+        }
+    }
 
 }
